@@ -1,0 +1,33 @@
+{% extends "todo/base.html" %}
+
+{% block content %}
+<form method="post" action="{% url 'add_task' %}">
+    {% csrf_token %}
+    <input type="text" name="title" placeholder="Новая задача" required>
+    <button type="submit">Добавить</button>
+</form>
+
+<ul style="list-style: none;">
+    {% for task in tasks %}
+        <li>
+            <form action="{% url 'complete_task' task.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="checkbox"
+                       onchange="this.form.submit()"
+                       {% if task.completed %}checked{% endif %}>
+            </form>
+
+            <span {% if task.completed %}style="text-decoration: line-through;"{% endif %}>
+                {{ task.title }}
+            </span>
+
+            <form action="{% url 'delete_task' task.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: red; cursor: pointer;">[Удалить]</button>
+            </form>
+        </li>
+    {% empty %}
+        <p>Задач нет.</p>
+    {% endfor %}
+</ul>
+{% endblock %}
